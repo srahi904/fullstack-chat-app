@@ -38,14 +38,8 @@ app.use("/api/messages", messageRoutes);
 
 // Production static files and SPA catch-all
 if (process.env.NODE_ENV === "production") {
-  // Construct the correct path to the frontend's dist directory
   const frontendDistPath = path.resolve(__dirname, "../../frontend/dist");
-
-  // Serve static files (JS, CSS, images) from the frontend build
   app.use(express.static(frontendDistPath));
-
-  // ❗❗❗ **THIS IS THE FIXED LINE** ❗❗❗
-  // For any other request, send the index.html file. Notice there is NO COLON before the star.
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(frontendDistPath, "index.html"));
   });
