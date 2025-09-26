@@ -37,8 +37,8 @@ if (process.env.NODE_ENV === "production") {
   const frontendPath = path.join(__dirname, "../frontend/dist");
   app.use(express.static(frontendPath));
 
-  // Express 5 fix → use "/*" instead of "*"
-  app.get("/*", (req, res) => {
+  // ✅ Express 5 compatible catch-all
+  app.get(/.*/, (req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
