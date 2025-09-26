@@ -8,7 +8,7 @@ import path from "path";
 import { connectDB } from "./lib/db.js";
 import authRoutes from "./routes/authRoute.js";
 import messageRoutes from "./routes/messageRoutes.js";
-import { app, server } from "./lib/socket.js"; // ✅ socket.js already app export kar raha hai
+import { app, server } from "./lib/socket.js";
 
 dotenv.config();
 
@@ -22,8 +22,8 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === "production"
-        ? process.env.CLIENT_URL // Render pe env variable me set karo → e.g. https://your-frontend.onrender.com
-        : "http://localhost:5173", // local dev
+        ? process.env.CLIENT_URL
+        : "http://localhost:5173",
     credentials: true,
   })
 );
@@ -37,10 +37,16 @@ if (process.env.NODE_ENV === "production") {
   const frontendPath = path.join(__dirname, "../frontend/dist");
   app.use(express.static(frontendPath));
 
-  // Express v5 fix → use "/*" instead of "*"
-  app.get("/*", (req, res) => {
+  // ✅ Express 5 / path-to-regexp v6 compatible
+  // Either regex:
+  app.get(/.*/, (req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
   });
+
+  // OR parameterized wildcard (also works):
+  // app.get("/*path", (req, res) => {
+  //   res.sendFile(path.join(frontendPath, "index.html"));
+  // });
 }
 
 // Start server
