@@ -8,7 +8,7 @@ import path from "path";
 import { connectDB } from "./lib/db.js";
 import authRoutes from "./routes/authRoute.js";
 import messageRoutes from "./routes/messageRoutes.js";
-import { app, server } from "./lib/socket.js";
+import { app, server } from "./lib/socket.js"; // ✅ socket.js already app export kar raha hai
 
 dotenv.config();
 
@@ -22,13 +22,13 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === "production"
-        ? process.env.CLIENT_URL // set this in Render env → e.g. https://your-app.onrender.com
-        : "http://localhost:5173",
+        ? process.env.CLIENT_URL // Render pe env variable me set karo → e.g. https://your-frontend.onrender.com
+        : "http://localhost:5173", // local dev
     credentials: true,
   })
 );
 
-// Routes
+// API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
@@ -37,14 +37,14 @@ if (process.env.NODE_ENV === "production") {
   const frontendPath = path.join(__dirname, "../frontend/dist");
   app.use(express.static(frontendPath));
 
-  // ✅ Express 5 compatible catch-all
-  app.get(/.*/, (req, res) => {
+  // Express v5 fix → use "/*" instead of "*"
+  app.get("/*", (req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
   });
 }
 
 // Start server
 server.listen(PORT, () => {
-  console.log(`✅ Server is running on port: ${PORT}`);
+  console.log(`✅ Server running on port: ${PORT}`);
   connectDB();
 });
